@@ -1,23 +1,70 @@
-import logo from './logo.svg';
+import {useEffect, useReducer} from 'react'
+import { AddTarea } from './components/AddTarea';
+import { ListTareas } from './components/ListTareas';
 import './App.css';
+import { tareasReducer } from './reducers/tareasReducer';
+
 
 function App() {
+
+  const init = () => {
+    return JSON.parse(localStorage.getItem('tareas')) || [];
+  }
+
+    const [tareas, dispatch] = useReducer(tareasReducer, [], init)
+
+    useEffect(() => {
+      localStorage.setItem('tareas', JSON.stringify(tareas))
+    
+    }, [tareas]);
+
+    const handleAdd = (tarea) => {
+      const agregarTarea = {
+        type : "agregar",
+        payload : tarea
+      }
+
+      dispatch(agregarTarea)
+    }
+
+    const handleDelete = (id) => {
+      const borrarTarea = {
+        type : "borrar",
+        payload : id
+      }
+      dispatch(borrarTarea)
+    } 
+
+    const handleUpdate = (id) => {
+      const actualizarTarea = {
+        type : "actualizar",
+        payload : id
+      }
+      dispatch(actualizarTarea)
+    } 
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='container'>
+      <h1>Tareas</h1>
+      <hr />
+      <h4>Total de tareas: </h4>
+      <hr />
+      <div className='row'>
+
+        <div className='col-7'>
+          <ListTareas
+            tareas = {tareas}
+            handleDelete = {handleDelete}
+            handleUpdate = {handleUpdate}
+          />
+        </div>
+        <div className='col-5'>
+          <AddTarea
+            handleAdd={handleAdd}
+          />
+        </div>
+
+      </div>
     </div>
   );
 }
